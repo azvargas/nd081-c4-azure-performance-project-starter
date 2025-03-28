@@ -76,8 +76,17 @@ if ("TITLE" in os.environ and os.environ['TITLE']):
 else:
     title = app.config['TITLE']
 
-# Redis Connection
-r = redis.Redis()
+redis_server = os.environ['REDIS']
+
+# Redis Connection to another container
+try:
+    if "REDIS_PWD" in os.environ:
+        r = redis.StrictRedis(host=redis_server, port=6379, password=os.environ['REDIS_PWD'])
+    else:
+        r = redis.Redis(redis_server)
+    r.ping()
+except redis.ConnectionError:
+    exit('Failed to connect to Redis, terminating.')
 
 # Change title to host name to demo NLB
 if app.config['SHOWHOST'] == "true":
@@ -110,9 +119,8 @@ def index():
 
         if request.form['vote'] == 'reset':
 
-            # Empty table and return results
-            r.set(button1,0)
-            r.set(button2,0)
+            #Return results
+            
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
             # use logger object to log cat vote
@@ -122,6 +130,10 @@ def index():
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
             # use logger object to log dog vote
             logger.info('Dogs Vote', extra=properties)
+
+            # Empty table
+            r.set(button1,0)
+            r.set(button2,0)
 
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
