@@ -1,3 +1,4 @@
+opencensus-ext-requests
 six
 werkzeug==2.0.3
 itsdangerous==2.0.1
