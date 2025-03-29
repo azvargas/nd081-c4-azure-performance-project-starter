@@ -1,3 +1,8 @@
+opencensus-ext-requests
+six
+werkzeug==2.0.3
+itsdangerous==2.0.1
+jinja2==3.0.3
 Flask==1.1.2
 opencensus-ext-azure==1.0.4
 opencensus-ext-flask==0.7.3
